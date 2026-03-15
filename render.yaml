@@ -2,9 +2,8 @@ services:
   - type: web
     name: researchmind-ai
     runtime: python
-    rootDir: Multi_Ai_Research_Agent
-    buildCommand: pip install -r requirements.txt
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
     startCommand: streamlit run app.py
     envVars:
       - key: PYTHON_VERSION
-        value: 3.10.12
+        value: 3.11.0

@@ -7,8 +7,8 @@ from dotenv import load_dotenv
 # Ensure environment variables are loaded
 load_dotenv()
 
-# Pwd hashing for local compat
-pwd_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Hashing context
+pwd_ctx = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 
 _supabase_client: Client = None
 

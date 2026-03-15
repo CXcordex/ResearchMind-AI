@@ -9,6 +9,7 @@ import uuid
 import db
 import pdfplumber
 from dotenv import load_dotenv
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 load_dotenv()
 db.init_db()
@@ -378,6 +379,7 @@ hr { border-color: var(--border) !important; }
 
 # ── HELPERS ──────────────────────────────────────────────────────────────────
 
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
 def call_nvidia(model, sys_prompt, user_msg, temp=0.3):
     r = requests.post(NVIDIA_URL, headers={
         "Authorization": f"Bearer {NVIDIA_API_KEY}",
@@ -386,7 +388,7 @@ def call_nvidia(model, sys_prompt, user_msg, temp=0.3):
         "model": model,
         "messages": [{"role":"system","content":sys_prompt},{"role":"user","content":user_msg}],
         "max_tokens": 1024, "temperature": temp, "stream": False
-    }, timeout=180)
+    }, timeout=300)
     r.raise_for_status()
     return r.json()["choices"][0]["message"]["content"]
 

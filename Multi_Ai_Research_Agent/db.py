@@ -15,10 +15,21 @@ _supabase_client: Client = None
 def get_client() -> Client:
     global _supabase_client
     if _supabase_client is None:
+        # 1. Try environment variables (Local / Docker / Standard Cloud)
         url = os.getenv("SUPABASE_URL")
         key = os.getenv("SUPABASE_KEY")
+        
+        # 2. Try Streamlit Secrets (Streamlit Community Cloud)
         if not url or not key:
-            # Try reloading if missing
+            try:
+                import streamlit as st
+                url = st.secrets.get("SUPABASE_URL")
+                key = st.secrets.get("SUPABASE_KEY")
+            except Exception:
+                pass
+        
+        # 3. Last ditch: reload .env
+        if not url or not key:
             load_dotenv()
             url = os.getenv("SUPABASE_URL")
             key = os.getenv("SUPABASE_KEY")
@@ -30,7 +41,7 @@ def get_client() -> Client:
                 print(f"[DB] Error creating Supabase client: {e}")
                 return None
         else:
-            print("[DB] Critical: SUPABASE_URL or SUPABASE_KEY missing in environment.")
+            print("[DB] Critical: SUPABASE_URL or SUPABASE_KEY missing in environment/secrets.")
             return None
     return _supabase_client
 

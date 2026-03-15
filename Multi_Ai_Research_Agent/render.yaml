@@ -2,6 +2,7 @@ services:
   - type: web
     name: researchmind-ai
     runtime: python
+    rootDir: Multi_Ai_Research_Agent
     buildCommand: pip install -r requirements.txt
     startCommand: streamlit run app.py
     envVars:
